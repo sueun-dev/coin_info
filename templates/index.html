@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tweets</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #tweets-container, #articles-container {
+            height: 500px;
+            overflow-y: scroll;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">Coin Desk & Tweets</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <h1>coin desk news</h1>
+                <h1>Dynamic Search Terms</h1>
+                <p>Current search terms: {{ search_terms }}</p>
+                <form method="POST" action="/add_user">
+                    <label for="user">Add user:</label>
+                    <input type="text" name="user" id="user">
+                    <button type="submit">Add</button>
+                </form>
+                <div id="articles-container" class="mt-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Sentiment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="articles-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h1>tweets</h1>
+                <div id="tweets-container" class="mt-4">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Username</th>
+                                <th>Text</th>
+                                <th>Sentiment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tweets-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function refreshTweets() {
+            $.getJSON('/tweets', function(data) {
+                if (data.length > 0) {
+                    let firstTweetId = $("#tweets-table tr:first-child td:first-child").text();
+                    if (firstTweetId !== data[0].user_id) {
+                        let table_content = "";
+                        let displayCount = data.length > 50 ? 50 : data.length;
+                        for (let i = 0; i < displayCount; i++) {
+                            table_content += `
+                                <tr>
+                                    <td>${data[i].date}</td>
+                                    <td>${data[i].username}</td>
+                                    <td>${data[i].text}</td>
+                                    <td>${data[i].sentiment}</td>
+                                </tr>
+                            `;
+                        }
+                        $("#tweets-table").html(table_content);
+                    }
+                }
+            });
+        }
+   
+    function refreshArticles() {
+        $.getJSON('/articles', function(data) {
+            if (data.length > 0) {
+                let firstArticleTitle = $("#articles-table tr:first-child td:first-child").text();
+                if (firstArticleTitle !== data[0].title) {
+                    let table_content = "";
+                    for (let i = 0; i < data.length; i++) {
+                        table_content += `
+                            <tr>
+                                <td>${data[i].title}</td>
+                                <td>${data[i].content}</td>
+                                <td>${data[i].sentiment}</td>
+                            </tr>
+                        `;
+                    }
+                    $("#articles-table").html(table_content);
+                }
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        function refresh() {
+            refreshTweets();
+            refreshArticles();
+        }
+    
+        refresh(); // Refresh both tweets and articles when the document is ready
+        setInterval(refresh, 1000); // Refresh both tweets and articles every 5 seconds (5000 milliseconds)
+    });
+    
+    </script>
+    
+</body>
+</html>
