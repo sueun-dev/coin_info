@@ -3,7 +3,6 @@ import threading
 from utils import *
 from scraper import search_terms, start_new_thread
 
-
 app = Flask(__name__)
 
 articles_thread = threading.Thread(target=update_articles)

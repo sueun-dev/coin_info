@@ -41,7 +41,7 @@ def update_articles():
         new_articles_df = pd.DataFrame(articles_data)
         if not new_articles_df.equals(prev_articles_list[-1]):
             prev_articles_list.append(new_articles_df)
-        time.sleep(2)
+        time.sleep(30)
 
 
 def get_tweets(search_terms, num_tweets=50):
