@@ -5,3 +5,4 @@ snscrape==0.6.1.20230314
 beautifulsoup4==4.11.2
 nltk==3.8.1
 transformers==4.26.1
+scipy==1.10.1
